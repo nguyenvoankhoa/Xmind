@@ -1,16 +1,19 @@
 package board;
 
 import dependency.IBoardSerialize;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
 public class BoardWordSerializer implements IBoardSerialize {
+    private static final Log LOGGER = LogFactory.getLog(BoardPNGSerializer.class);
+
     @Override
     public boolean saveMindMap(Board board, String filepath) {
         try (XWPFDocument document = new XWPFDocument()) {
@@ -26,13 +29,13 @@ public class BoardWordSerializer implements IBoardSerialize {
                 XWPFRun run = paragraph.createRun();
                 run.setText(field.getName() + ": " + field.get(board));
             }
-            try (FileOutputStream out = new FileOutputStream(filepath)) {
-                document.write(out);
-                return true;
-            }
+            FileOutputStream out = new FileOutputStream(filepath);
+            document.write(out);
+            return true;
+
         } catch (IOException | IllegalAccessException e) {
-            e.printStackTrace();
+            LOGGER.error("Error saving mind map to Word: ", e);
+            return false;
         }
-        return false;
     }
 }

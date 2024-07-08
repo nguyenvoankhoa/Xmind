@@ -1,6 +1,8 @@
 package board;
 
 import dependency.IBoardSerialize;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -9,6 +11,8 @@ import java.io.File;
 import java.io.IOException;
 
 public class BoardPNGSerializer implements IBoardSerialize {
+    private static final Log LOGGER = LogFactory.getLog(BoardPNGSerializer.class);
+
     @Override
     public boolean saveMindMap(Board board, String filepath) {
         int width = 400;
@@ -28,8 +32,8 @@ public class BoardPNGSerializer implements IBoardSerialize {
             ImageIO.write(image, "PNG", output);
             return true;
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Error saving mind map to PNG: ", e);
+            return false;
         }
-        return false;
     }
 }
