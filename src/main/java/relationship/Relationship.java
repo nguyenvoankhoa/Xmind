@@ -1,13 +1,14 @@
 package relationship;
 
+import content.Node;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class Relationship {
-    private String sourceNode;
-    private String targetNode;
+    private Node sourceNode;
+    private Node targetNode;
     private String style;
     private String color;
 
@@ -19,9 +20,13 @@ public class Relationship {
         this.name = "Relationship";
     }
 
-    public Relationship(String sourceNode, String targetNode) {
+    public Relationship(Node sourceNode, Node targetNode) {
         this();
         this.sourceNode = sourceNode;
+        this.targetNode = targetNode;
+    }
+
+    public void changeTargetRelationship(Node targetNode) {
         this.targetNode = targetNode;
     }
 
