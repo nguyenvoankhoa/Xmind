@@ -9,7 +9,5 @@ public enum ViewType {
         this.ratio = ratio;
     }
 
-    public String getRatio() {
-        return ratio;
-    }
+
 }

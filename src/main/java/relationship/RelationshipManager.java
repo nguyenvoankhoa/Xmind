@@ -11,7 +11,6 @@ import java.util.ArrayList;
 @Getter
 public class RelationshipManager implements IRelationshipManager {
     private List<Relationship> relationships;
-
     public RelationshipManager() {
         this.relationships = new ArrayList<>();
     }

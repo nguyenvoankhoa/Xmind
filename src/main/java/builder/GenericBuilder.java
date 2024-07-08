@@ -2,8 +2,8 @@ package builder;
 
 import content.Leaf;
 import content.Node;
-import content.Position;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -14,7 +14,6 @@ public abstract class GenericBuilder<T extends GenericBuilder<T>> {
     protected String content;
     protected String color;
     protected String background;
-    protected Position position;
     protected List<Node> children = new ArrayList<>();
     protected boolean isOpen;
     protected String font;
@@ -29,10 +28,6 @@ public abstract class GenericBuilder<T extends GenericBuilder<T>> {
         return self();
     }
 
-    public T addPosition(Position position) {
-        this.position = position;
-        return self();
-    }
 
     public T addOpen(boolean status) {
         this.isOpen = status;
@@ -49,7 +44,7 @@ public abstract class GenericBuilder<T extends GenericBuilder<T>> {
         return self();
     }
 
-    public T addChildren(String... children) {
+    public T addChildren(String... children) throws IOException {
         for (String str : children) {
             Leaf leaf = new Leaf(UUID.randomUUID().toString(), str);
             this.children.add(leaf);
@@ -69,5 +64,5 @@ public abstract class GenericBuilder<T extends GenericBuilder<T>> {
 
     protected abstract T self();
 
-    public abstract Node build();
+    public abstract Node build() throws IOException;
 }

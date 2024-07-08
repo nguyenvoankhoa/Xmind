@@ -1,9 +1,11 @@
 package content;
 
+import setting.PropertiesLoader;
 import setting.Structure;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -16,39 +18,33 @@ public class Node {
     private String content;
     private String color;
     private String background;
-    private Position position;
     private List<Node> children;
     private boolean isOpen;
     private String shape;
     private String font;
     private Structure structure;
 
-    public Node() {
-        this.color = "Black";
-        this.position = new Position();
+    private PropertiesLoader propertiesLoader = PropertiesLoader.getInstance();
+
+    public Node() throws IOException {
+        this.color = propertiesLoader.getProperty("root.color");
         this.children = new ArrayList<>();
         this.isOpen = true;
-        this.font = "Arial";
-        this.background = "White";
-        this.shape = "Rectangle";
+        this.font = propertiesLoader.getProperty("board.globalFont");
+        this.background = propertiesLoader.getProperty("board.background");
+        this.shape = propertiesLoader.getProperty("root.shape");
         this.structure = Structure.FISH_BONE;
     }
 
-    public Node(String id, String content) {
+    public Node(String id, String content) throws IOException {
         this();
         this.id = id;
         this.content = content;
     }
 
-    public Node(String id, String content, List<Node> children) {
+    public Node(String id, String content, List<Node> children) throws IOException {
         this(id, content);
         this.children = children;
-    }
-
-    public Node(String id, String content, List<Node> children, Position position) {
-        this(id, content);
-        this.children = children;
-        this.position = position;
     }
 
 
@@ -88,21 +84,5 @@ public class Node {
                         .filter(Objects::nonNull)
                         .findFirst()
                         .orElse(null));
-    }
-
-    @Override
-    public String toString() {
-        return "Node{" +
-                "id='" + id + '\'' +
-                ", content='" + content + '\'' +
-                ", color='" + color + '\'' +
-                ", background='" + background + '\'' +
-                ", position=" + position +
-                ", children=" + children +
-                ", isOpen=" + isOpen +
-                ", shape='" + shape + '\'' +
-                ", font='" + font + '\'' +
-                ", structure=" + structure +
-                '}';
     }
 }

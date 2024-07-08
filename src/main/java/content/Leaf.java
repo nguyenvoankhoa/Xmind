@@ -1,10 +1,9 @@
 package content;
 
-
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
+import java.io.IOException;
 import java.util.Optional;
 
 @Getter
@@ -14,26 +13,21 @@ public class Leaf extends Node {
 
     private boolean isFloating;
 
-    public Leaf(String id, String content) {
+
+    public Leaf(String id, String content) throws IOException {
         super(id, content);
     }
 
-    public Leaf(String id, String content, List<Node> children, Position position) {
-        super(id, content, children, position);
-    }
-
-    public Leaf(String id, String content, List<Node> children, Position position, Node parent) {
-        super(id, content, children, position);
+    public Leaf(String id, String content, Node parent) throws IOException {
+        super(id, content);
         this.parent = parent;
     }
 
-    public void move(Position position, String nodeId, Root root) {
-        Node cur = root.findById(nodeId);
-        this.parent.removeChild(nodeId);
-        Node potentialParent = root.findNodeInRange(position);
-        Optional.ofNullable(potentialParent)
-                .ifPresentOrElse(p -> p.addChild(cur), () -> this.parent = null);
+    public void changeParent(Node parent) {
+        Optional.ofNullable(this.getParent())
+                .ifPresent(p -> p.removeChild(this.getId()));
+        Optional.ofNullable(parent)
+                .ifPresent(p -> p.addChild(this));
+        this.setFloating(true);
     }
-
-
 }
