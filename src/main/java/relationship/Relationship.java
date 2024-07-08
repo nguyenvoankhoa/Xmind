@@ -3,6 +3,9 @@ package relationship;
 import content.Node;
 import lombok.Getter;
 import lombok.Setter;
+import setting.PropertiesLoader;
+
+import java.io.IOException;
 
 @Getter
 @Setter
@@ -13,14 +16,15 @@ public class Relationship {
     private String color;
 
     private String name;
+    private PropertiesLoader propertiesLoader = PropertiesLoader.getInstance();
 
-    public Relationship() {
-        this.style = "Thin";
-        this.color = "Black";
-        this.name = "Relationship";
+    public Relationship() throws IOException {
+        this.style = propertiesLoader.getProperty("relationship.style");
+        this.color = propertiesLoader.getProperty("relationship.color");
+        this.name = propertiesLoader.getProperty("relationship.name");
     }
 
-    public Relationship(Node sourceNode, Node targetNode) {
+    public Relationship(Node sourceNode, Node targetNode) throws IOException {
         this();
         this.sourceNode = sourceNode;
         this.targetNode = targetNode;

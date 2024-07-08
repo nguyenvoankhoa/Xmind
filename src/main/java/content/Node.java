@@ -29,7 +29,7 @@ public class Node {
     public Node() throws IOException {
         this.color = propertiesLoader.getProperty("root.color");
         this.children = new ArrayList<>();
-        this.isOpen = true;
+        this.isOpen = Boolean.parseBoolean(propertiesLoader.getProperty("root.isOpen"));
         this.font = propertiesLoader.getProperty("board.globalFont");
         this.background = propertiesLoader.getProperty("board.background");
         this.shape = propertiesLoader.getProperty("root.shape");
