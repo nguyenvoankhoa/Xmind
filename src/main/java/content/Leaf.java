@@ -23,7 +23,8 @@ public class Leaf extends Node {
         this.parent = parent;
     }
 
-    public void changeParent(Node parent) {
+    public void changeParent(String parentId, Root root) {
+        Node parent = root.findById(parentId);
         Optional.ofNullable(this.getParent())
                 .ifPresent(p -> p.removeChild(this.getId()));
         Optional.ofNullable(parent)

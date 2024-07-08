@@ -25,7 +25,7 @@ public class Sheet {
     private Root root;
     private IRelationshipManager iRelationshipManager;
     private ISheetSerialize iSheetSerialize;
-    private PropertiesLoader propertiesLoader = PropertiesLoader.getInstance();
+    private PropertiesLoader propertiesLoader;
 
     public Sheet() throws IOException {
         this.root = new RootBuilder()
@@ -42,10 +42,11 @@ public class Sheet {
         this.viewType = ViewType.THREE_BY_FOUR;
     }
 
-    public Sheet(IRelationshipManager iRelationshipManager, ISheetSerialize iSheetSerialize) throws IOException {
+    public Sheet(IRelationshipManager iRelationshipManager, ISheetSerialize iSheetSerialize, PropertiesLoader propertiesLoader) throws IOException {
         this();
         this.iRelationshipManager = iRelationshipManager;
         this.iSheetSerialize = iSheetSerialize;
+        this.propertiesLoader = propertiesLoader;
     }
 
     @Override
@@ -68,7 +69,7 @@ public class Sheet {
     }
 
     public Sheet duplicateSheet(Sheet template) throws IOException {
-        Sheet newSheet = new Sheet(template.iRelationshipManager, template.iSheetSerialize);
+        Sheet newSheet = new Sheet(template.iRelationshipManager, template.iSheetSerialize, template.propertiesLoader);
         newSheet.setTheme(template.getTheme());
         newSheet.setBackground(template.getBackground());
         newSheet.setGlobalFont(template.getGlobalFont());

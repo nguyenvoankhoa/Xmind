@@ -1,5 +1,6 @@
 package xmindtest;
 
+import setting.PropertiesLoader;
 import sheet.*;
 import dependency.ISheetSerialize;
 import dependency.IRelationshipManager;
@@ -26,7 +27,8 @@ class XMindApplicationTests {
     public void setUp() throws IOException {
         ISheetSerialize sheetSerialize = new SheetPDFSerializer();
         IRelationshipManager relationshipManager = new RelationshipManager();
-        sheet = new Sheet(relationshipManager, sheetSerialize);
+        PropertiesLoader propertiesLoader = PropertiesLoader.getInstance();
+        sheet = new Sheet(relationshipManager, sheetSerialize, propertiesLoader);
         root = sheet.getRoot();
     }
 
@@ -36,22 +38,22 @@ class XMindApplicationTests {
     }
 
     @Test
-    void testCreateBoard() throws IOException {
+    void testCreateSheet() throws IOException {
         Sheet newSheet = sheet.createSheet();
         assertNotEquals(null, newSheet);
     }
 
     @Test
-    void testDuplicateBoard() throws IOException {
+    void testDuplicateSheet() throws IOException {
         Sheet duplicateSheet = sheet.duplicateSheet(sheet);
         assertNotEquals(null, duplicateSheet);
     }
 
     @Test
-    void testRenameBoard() {
-        String newBoardName = "Test";
-        sheet.setTitle(newBoardName);
-        assertEquals(sheet.getTitle(), newBoardName);
+    void testRenameSheet() {
+        String newSheetName = "Test";
+        sheet.setTitle(newSheetName);
+        assertEquals(sheet.getTitle(), newSheetName);
     }
 
     @Test
@@ -129,7 +131,7 @@ class XMindApplicationTests {
         Leaf leaf1 = new Leaf("def", "Leaf 2", root);
         root.addChild(leaf);
         root.addChild(leaf1);
-        leaf.changeParent(leaf1);
+        leaf.changeParent("def", sheet.getRoot());
         assertEquals(leaf.getParent().getId(), leaf1.getId());
     }
 
@@ -138,10 +140,10 @@ class XMindApplicationTests {
     void testFloatContentBecomeLeaf() throws IOException {
         Leaf leaf = new Leaf("leaf", "New Topic");
         leaf.setFloating(true);
-        leaf.changeParent(root);
+        leaf.changeParent("root", sheet.getRoot());
         assertEquals(leaf.getParent().getId(), root.getId());
-
     }
+
 
 
     @Test
@@ -195,7 +197,7 @@ class XMindApplicationTests {
     }
 
     @Test
-    void testChangeTargetRelationship() throws IOException {
+    void testChangeTargetNodeRelationship() throws IOException {
         Leaf src = new Leaf("abc", "Node 1");
         Leaf target = new Leaf("def", "Node 2");
         root.addChild(src);
