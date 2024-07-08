@@ -12,17 +12,12 @@ import org.springframework.beans.factory.annotation.Value;
 @Getter
 @Setter
 public class Board {
-    @Value("${board.theme}")
+
     private String theme;
-    @Value("${board.background}")
     private String background;
-    @Value("${board.globalFont}")
     private String globalFont;
-    @Value("${board.zoomLevel}")
     private int zoomLevel;
-    @Value("${board.title}")
     private String title;
-    @Value("${board.viewType}")
     private ViewType viewType;
     private Root root;
     private IRelationshipManager iRelationshipManager;
@@ -42,7 +37,25 @@ public class Board {
         this.zoomLevel = 90;
         this.viewType = ViewType.THREE_BY_FOUR;
     }
-
+    public Board(@Value("${board.theme}") String theme,
+                 @Value("${board.background}") String background,
+                 @Value("${board.globalFont}") String globalFont,
+                 @Value("${board.zoomLevel}") int zoomLevel,
+                 @Value("${board.title}") String title,
+                 @Value("${board.viewType}") ViewType viewType) {
+        this.theme = theme;
+        this.background = background;
+        this.globalFont = globalFont;
+        this.zoomLevel = zoomLevel;
+        this.title = title;
+        this.viewType = viewType;
+        this.root = new RootBuilder()
+                .addId("Root")
+                .addContent("Central Topic")
+                .addColor("Black")
+                .addChildren("Main Topic 1", "Main Topic 2", "Main Topic 3", "Main Topic 4")
+                .build();
+    }
     public Board(IRelationshipManager iRelationshipManager, IBoardSerialize iBoardSerialize) {
         this();
         this.iRelationshipManager = iRelationshipManager;
