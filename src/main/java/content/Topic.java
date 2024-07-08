@@ -1,6 +1,8 @@
 package content;
 
+import dependency.IPropertyLoader;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.IOException;
@@ -8,19 +10,15 @@ import java.util.Optional;
 
 @Getter
 @Setter
-public class Leaf extends Node {
+@NoArgsConstructor
+public class Topic extends Node {
+
     private Node parent;
 
     private boolean isFloating;
 
-
-    public Leaf(String id, String content) throws IOException {
-        super(id, content);
-    }
-
-    public Leaf(String id, String content, Node parent) throws IOException {
-        super(id, content);
-        this.parent = parent;
+    public Topic(IPropertyLoader iPropertyLoader, String id, String content) {
+        super(iPropertyLoader, id, content);
     }
 
     public void changeParent(String parentId, Root root) {

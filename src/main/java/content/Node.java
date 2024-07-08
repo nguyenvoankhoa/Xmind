@@ -1,11 +1,11 @@
 package content;
 
-import setting.PropertiesLoader;
+import dependency.IPropertyLoader;
+import lombok.NoArgsConstructor;
 import setting.Structure;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -13,20 +13,24 @@ import java.util.Optional;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class Node {
-    private String id;
-    private String content;
-    private String color;
-    private String background;
-    private List<Node> children;
-    private boolean isOpen;
-    private String shape;
-    private String font;
-    private Structure structure;
+    protected String id;
 
-    private PropertiesLoader propertiesLoader = PropertiesLoader.getInstance();
+    protected String content;
+    protected String color;
+    protected String background;
+    protected List<Node> children;
+    protected boolean isOpen;
+    protected String shape;
+    protected String font;
+    protected Structure structure;
 
-    public Node() throws IOException {
+    protected IPropertyLoader propertiesLoader;
+
+
+    public Node(IPropertyLoader iPropertyLoader) {
+        this.propertiesLoader = iPropertyLoader;
         this.color = propertiesLoader.getProperty("root.color");
         this.children = new ArrayList<>();
         this.isOpen = Boolean.parseBoolean(propertiesLoader.getProperty("root.isOpen"));
@@ -36,15 +40,10 @@ public class Node {
         this.structure = Structure.FISH_BONE;
     }
 
-    public Node(String id, String content) throws IOException {
-        this();
+    public Node(IPropertyLoader iPropertyLoader, String id, String content) {
+        this(iPropertyLoader);
         this.id = id;
         this.content = content;
-    }
-
-    public Node(String id, String content, List<Node> children) throws IOException {
-        this(id, content);
-        this.children = children;
     }
 
 
@@ -56,9 +55,9 @@ public class Node {
 
     public List<Node> addChild(Node child) {
         Optional.of(child)
-                .filter(Leaf.class::isInstance)
-                .map(c -> (Leaf) c)
-                .ifPresent(leaf -> leaf.setParent(this));
+                .filter(Topic.class::isInstance)
+                .map(c -> (Topic) c)
+                .ifPresent(topic -> topic.setParent(this));
         children.add(child);
         return children;
     }
