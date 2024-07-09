@@ -14,8 +14,6 @@ import setting.ViewType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class XMindApplicationTests {
@@ -24,7 +22,7 @@ class XMindApplicationTests {
     Root root;
 
     @BeforeEach
-    public void setUp() throws IOException {
+    public void setUp() {
         ISheetManager sheetManager = new SheetManager();
         xMind = new XMind(sheetManager);
         sheet = xMind.getSheetManager().getSheets().get(0);
@@ -42,7 +40,7 @@ class XMindApplicationTests {
     }
 
     @Test
-    void testDuplicateSheet() throws IOException {
+    void testDuplicateSheet() {
         Sheet duplicateSheet = xMind.getSheetManager().duplicateSheet(sheet);
         assertNotEquals(null, duplicateSheet);
     }
@@ -181,7 +179,7 @@ class XMindApplicationTests {
 
 
     @Test
-    void testRemoveRelationship() throws IOException {
+    void testRemoveRelationship() {
         Topic src = (Topic) root.findById("1");
         Topic target = (Topic) root.findById("2");
         long relaBefore = sheet.getIRelationshipManager().addRelationship(sheet.getPropertiesLoader(), src, target).stream().count();
@@ -192,7 +190,7 @@ class XMindApplicationTests {
     }
 
     @Test
-    void testAddRelationship() throws IOException {
+    void testAddRelationship() {
         Topic src = (Topic) root.findById("1");
         Topic target = (Topic) root.findById("2");
         sheet.getIRelationshipManager().addRelationship(sheet.getPropertiesLoader(), src, target);
@@ -200,7 +198,7 @@ class XMindApplicationTests {
     }
 
     @Test
-    void testChangeTargetNodeRelationship() throws IOException {
+    void testChangeTargetNodeRelationship() {
         Topic src = (Topic) root.findById("1");
         Topic target = (Topic) root.findById("2");
         sheet.getIRelationshipManager().addRelationship(sheet.getPropertiesLoader(), src, target);
