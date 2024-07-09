@@ -1,51 +1,47 @@
 package xmindtest;
 
-import setting.PropertiesLoader;
+import content.XMind;
+import dependency.ISheetManager;
 import sheet.*;
-import dependency.ISheetSerialize;
-import dependency.IRelationshipManager;
-import content.Leaf;
+import dependency.ISheetFile;
+import content.Topic;
 import content.Root;
 import file.IOMessage;
 import file.IOStatus;
 import relationship.Relationship;
-import relationship.RelationshipManager;
 import setting.Structure;
 import setting.ViewType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class XMindApplicationTests {
+    XMind xMind;
     Sheet sheet;
     Root root;
 
     @BeforeEach
-    public void setUp() throws IOException {
-        ISheetSerialize sheetSerialize = new SheetPDFSerializer();
-        IRelationshipManager relationshipManager = new RelationshipManager();
-        PropertiesLoader propertiesLoader = PropertiesLoader.getInstance();
-        sheet = new Sheet(relationshipManager, sheetSerialize, propertiesLoader);
+    public void setUp() {
+        ISheetManager sheetManager = new SheetManager();
+        xMind = new XMind(sheetManager);
+        sheet = xMind.getSheetManager().getSheets().get(0);
         root = sheet.getRoot();
     }
 
     @Test
-    void testDefaultInit() {
+    void testCreateNew() {
+        assertEquals(1, xMind.getSheetManager().getSheets().stream().count());
+    }
+
+    @Test
+    void testSheetDefaultInit() {
         assertEquals(4, sheet.getRoot().getChildren().stream().count());
     }
 
     @Test
-    void testCreateSheet() throws IOException {
-        Sheet newSheet = sheet.createSheet();
-        assertNotEquals(null, newSheet);
-    }
-
-    @Test
-    void testDuplicateSheet() throws IOException {
-        Sheet duplicateSheet = sheet.duplicateSheet(sheet);
+    void testDuplicateSheet() {
+        Sheet duplicateSheet = xMind.getSheetManager().duplicateSheet(sheet);
         assertNotEquals(null, duplicateSheet);
     }
 
@@ -58,58 +54,58 @@ class XMindApplicationTests {
 
     @Test
     void testExportPDF() {
-        IOMessage message = sheet.getISheetSerialize().saveMindMap(sheet, "test.pdf");
+        ISheetFile sheetFile = new SheetPDFFile();
+        sheet.setISheetFile(sheetFile);
+        IOMessage message = sheet.getISheetFile().saveMindMap(sheet, "test.pdf");
         assertEquals(IOStatus.SUCCESS, message.getExportStatus());
     }
 
     @Test
     void testExportPNG() {
-        ISheetSerialize sheetSerialize = new SheetPNGSerializer();
-        sheet.setISheetSerialize(sheetSerialize);
-        IOMessage message = sheet.getISheetSerialize().saveMindMap(sheet, "test.png");
+        ISheetFile sheetFile = new SheetPNGFile();
+        sheet.setISheetFile(sheetFile);
+        IOMessage message = sheet.getISheetFile().saveMindMap(sheet, "test.png");
         assertEquals(IOStatus.SUCCESS, message.getExportStatus());
     }
 
     @Test
     void testExportWord() {
-        ISheetSerialize sheetSerialize = new SheetWordSerializer();
-        sheet.setISheetSerialize(sheetSerialize);
-        IOMessage message = sheet.getISheetSerialize().saveMindMap(sheet, "test.docx");
+        ISheetFile sheetFile = new SheetWordFile();
+        sheet.setISheetFile(sheetFile);
+        IOMessage message = sheet.getISheetFile().saveMindMap(sheet, "test.docx");
         assertEquals(IOStatus.SUCCESS, message.getExportStatus());
     }
 
     @Test
-    void testExportXmind() {
-        ISheetSerialize sheetSerialize = new SheetXmindSerializer();
-        sheet.setISheetSerialize(sheetSerialize);
-        IOMessage message = sheet.getISheetSerialize().saveMindMap(sheet, "test.xmind");
+    void testExportXMind() {
+        ISheetFile sheetFile = new SheetXMindFile();
+        sheet.setISheetFile(sheetFile);
+        IOMessage message = sheet.getISheetFile().saveMindMap(sheet, "test.xmind");
         assertEquals(IOStatus.SUCCESS, message.getExportStatus());
     }
 
     @Test
-    void testOpenXmind() {
-        SheetXmindSerializer sheetSerialize = new SheetXmindSerializer();
-        sheet.setISheetSerialize(sheetSerialize);
-        IOMessage message = ((SheetXmindSerializer) sheet.getISheetSerialize()).openMindMap("test.xmind");
+    void testOpenXMind() {
+        SheetXMindFile sheetFile = new SheetXMindFile();
+        sheet.setISheetFile(sheetFile);
+        IOMessage message = ((SheetXMindFile) sheet.getISheetFile()).openMindMap("test.xmind");
         assertEquals(IOStatus.SUCCESS, message.getExportStatus());
     }
 
     @Test
-    void testAddChildren() throws IOException {
-        Leaf leaf = new Leaf("abc", "New Topic", root);
+    void testAddChildren() {
+        Topic topic = new Topic(sheet.getPropertiesLoader(), "abc", "New Topic");
         long beforeAddSize = root.getChildren().stream().count();
-        root.addChild(leaf);
+        root.addChild(topic);
         long afterAddSize = root.getChildren().stream().count();
         assertEquals(beforeAddSize + 1, afterAddSize);
     }
 
     @Test
-    void testRemoveChildren() throws IOException {
-        Leaf leaf = new Leaf("abc", "Leaf 1", root);
-        root.addChild(leaf);
-        long beforeRemoveSize = root.getChildren().stream().count();
-        root.removeChild(leaf.getId());
-        long afterRemoveSize = root.getChildren().stream().count();
+    void testRemoveChildren() {
+        Topic topic = new Topic(sheet.getPropertiesLoader(), "abc", "Leaf 1");
+        long beforeRemoveSize = root.addChild(topic).stream().count();
+        long afterRemoveSize = root.removeChild(topic.getId()).stream().count();
         assertEquals(beforeRemoveSize - 1, afterRemoveSize);
     }
 
@@ -126,24 +122,34 @@ class XMindApplicationTests {
     }
 
     @Test
-    void testLeafMove() throws IOException {
-        Leaf leaf = new Leaf("abc", "Leaf 1", root);
-        Leaf leaf1 = new Leaf("def", "Leaf 2", root);
-        root.addChild(leaf);
-        root.addChild(leaf1);
-        leaf.changeParent("def", sheet.getRoot());
-        assertEquals(leaf.getParent().getId(), leaf1.getId());
+    void testClearText() {
+        assertEquals("", root.clearText());
+    }
+
+    @Test
+    void testTopicChangeParent() {
+        Topic topic = new Topic(sheet.getPropertiesLoader(), "abc", "Topic 1");
+        root.addChild(topic);
+        topic.changeParent("1", sheet.getRoot(), sheet);
+        assertNotEquals(null, topic.getParent());
+    }
+
+    @Test
+    void testTopicBecomeFloat() {
+        Topic topic = new Topic(sheet.getPropertiesLoader(), "abc", "Topic 1");
+        root.addChild(topic);
+        topic.changeParent("", sheet.getRoot(), sheet);
+        assertTrue(topic.isFloating());
     }
 
 
     @Test
-    void testFloatContentBecomeLeaf() throws IOException {
-        Leaf leaf = new Leaf("leaf", "New Topic");
-        leaf.setFloating(true);
-        leaf.changeParent("root", sheet.getRoot());
-        assertEquals(leaf.getParent().getId(), root.getId());
+    void testFloatContentAddParent() {
+        Topic topic = new Topic(sheet.getPropertiesLoader(), "Hello", "New Topic");
+        topic.setFloating(true);
+        topic.changeParent("Root", sheet.getRoot(), sheet);
+        assertEquals(topic.getParent().getId(), root.getId());
     }
-
 
 
     @Test
@@ -173,36 +179,29 @@ class XMindApplicationTests {
 
 
     @Test
-    void testRemoveRelationship() throws IOException {
-        Leaf src = new Leaf("abc", "Node 1");
-        Leaf target = new Leaf("def", "Node 2");
-        root.addChild(src);
-        root.addChild(target);
-        sheet.getIRelationshipManager().addRelationship(src, target);
+    void testRemoveRelationship() {
+        Topic src = (Topic) root.findById("1");
+        Topic target = (Topic) root.findById("2");
+        long relaBefore = sheet.getIRelationshipManager().addRelationship(sheet.getPropertiesLoader(), src, target).stream().count();
         Relationship relationship = sheet.getIRelationshipManager().getRelationships().get(0);
-        int relaBefore = sheet.getIRelationshipManager().getRelationships().size();
         sheet.getIRelationshipManager().removeRelationship(relationship);
-        int relaAfter = sheet.getIRelationshipManager().getRelationships().size();
+        long relaAfter = sheet.getIRelationshipManager().getRelationships().stream().count();
         assertEquals(relaBefore - 1, relaAfter);
     }
 
     @Test
-    void testAddRelationship() throws IOException {
-        Leaf src = new Leaf("abc", "Node 1");
-        Leaf target = new Leaf("def", "Node 2");
-        root.addChild(src);
-        root.addChild(target);
-        sheet.getIRelationshipManager().addRelationship(src, target);
+    void testAddRelationship() {
+        Topic src = (Topic) root.findById("1");
+        Topic target = (Topic) root.findById("2");
+        sheet.getIRelationshipManager().addRelationship(sheet.getPropertiesLoader(), src, target);
         assertEquals(1, sheet.getIRelationshipManager().getRelationships().stream().count());
     }
 
     @Test
-    void testChangeTargetNodeRelationship() throws IOException {
-        Leaf src = new Leaf("abc", "Node 1");
-        Leaf target = new Leaf("def", "Node 2");
-        root.addChild(src);
-        root.addChild(target);
-        sheet.getIRelationshipManager().addRelationship(src, target);
+    void testChangeTargetNodeRelationship() {
+        Topic src = (Topic) root.findById("1");
+        Topic target = (Topic) root.findById("2");
+        sheet.getIRelationshipManager().addRelationship(sheet.getPropertiesLoader(), src, target);
         sheet.getIRelationshipManager().getRelationships().get(0).changeTargetRelationship(root);
         assertEquals(sheet.getIRelationshipManager().getRelationships().get(0).getTargetNode(), root);
     }
@@ -212,6 +211,5 @@ class XMindApplicationTests {
         root.setStructure(Structure.FISH_BONE);
         assertEquals(Structure.FISH_BONE, root.getStructure());
     }
-
 
 }

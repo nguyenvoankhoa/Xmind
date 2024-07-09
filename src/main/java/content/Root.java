@@ -1,23 +1,31 @@
 package content;
 
-import java.io.IOException;
-import java.util.List;
+import dependency.IPropertyLoader;
 
 public class Root extends Node {
 
-
-    public Root() throws IOException {
-        super();
-    }
-
-    public Root(String id, String content, List<Node> children) throws IOException {
-        super(id, content, children);
+    public Root(IPropertyLoader iPropertyLoader) {
+        super(iPropertyLoader);
+        initDefaultValue();
     }
 
     public void removeAll() {
         this.setChildren(null);
     }
 
+    public void initDefaultValue() {
+        this.setId(propertiesLoader.getProperty("root.id"));
+        this.setContent(propertiesLoader.getProperty("root.content"));
+        this.setColor(propertiesLoader.getProperty("root.color"));
+        Topic topic = new Topic(propertiesLoader, "1", "Topic 1");
+        Topic topic2 = new Topic(propertiesLoader, "2", "Topic 2");
+        Topic topic3 = new Topic(propertiesLoader, "3", "Topic 3");
+        Topic topic4 = new Topic(propertiesLoader, "4", "Topic 4");
+        this.getChildren().add(topic);
+        this.getChildren().add(topic2);
+        this.getChildren().add(topic3);
+        this.getChildren().add(topic4);
+    }
 
 
 }

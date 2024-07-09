@@ -1,10 +1,10 @@
 package sheet;
 
-import dependency.ISheetSerialize;
+import dependency.ISheetFile;
 import file.IOMessage;
 import file.IOStatus;
 
-public class SheetPDFSerializer implements ISheetSerialize {
+public class SheetPDFFile implements ISheetFile {
     @Override
     public IOMessage saveMindMap(Sheet sheet, String filepath) {
         return new IOMessage(IOStatus.SUCCESS, "Save to PDF success");

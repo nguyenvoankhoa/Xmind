@@ -9,7 +9,7 @@ import java.util.List;
 public interface IRelationshipManager {
     void removeRelationship(Relationship relationship);
 
-    List<Relationship> addRelationship(Node src, Node target) throws IOException;
+    List<Relationship> addRelationship(IPropertyLoader propertyLoader, Node src, Node target);
 
     List<Relationship> getRelationships();
 

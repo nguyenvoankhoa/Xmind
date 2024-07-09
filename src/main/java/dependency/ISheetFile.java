@@ -3,6 +3,6 @@ package dependency;
 import sheet.Sheet;
 import file.IOMessage;
 
-public interface ISheetSerialize {
+public interface ISheetFile {
     IOMessage saveMindMap(Sheet sheet, String filepath);
 }

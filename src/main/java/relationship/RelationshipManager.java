@@ -1,11 +1,11 @@
 package relationship;
 
 import content.Node;
+import dependency.IPropertyLoader;
 import dependency.IRelationshipManager;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -13,6 +13,7 @@ import java.util.ArrayList;
 @Getter
 public class RelationshipManager implements IRelationshipManager {
     private List<Relationship> relationships;
+
     public RelationshipManager() {
         this.relationships = new ArrayList<>();
     }
@@ -25,8 +26,8 @@ public class RelationshipManager implements IRelationshipManager {
                 .ifPresent(r -> relationships.remove(r));
     }
 
-    public List<Relationship> addRelationship(Node src, Node target) throws IOException {
-        relationships.add(new Relationship(src, target));
+    public List<Relationship> addRelationship(IPropertyLoader propertyLoader, Node src, Node target){
+        relationships.add(new Relationship(propertyLoader, src, target));
         return this.relationships;
     }
 }
