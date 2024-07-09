@@ -6,7 +6,6 @@ import dependency.IRelationshipManager;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -27,7 +26,7 @@ public class RelationshipManager implements IRelationshipManager {
                 .ifPresent(r -> relationships.remove(r));
     }
 
-    public List<Relationship> addRelationship(IPropertyLoader propertyLoader, Node src, Node target) throws IOException {
+    public List<Relationship> addRelationship(IPropertyLoader propertyLoader, Node src, Node target){
         relationships.add(new Relationship(propertyLoader, src, target));
         return this.relationships;
     }

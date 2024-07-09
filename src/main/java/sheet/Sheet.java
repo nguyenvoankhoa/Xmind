@@ -1,7 +1,7 @@
 package sheet;
 
 import content.Root;
-import dependency.ISheetSerialize;
+import dependency.ISheetFile;
 import dependency.IRelationshipManager;
 import relationship.RelationshipManager;
 import setting.PropertiesLoader;
@@ -23,7 +23,7 @@ public class Sheet {
     private ViewType viewType;
     private Root root;
     private IRelationshipManager iRelationshipManager;
-    private ISheetSerialize iSheetSerialize;
+    private ISheetFile iSheetFile;
     private PropertiesLoader propertiesLoader;
 
     public Sheet() throws IOException {
@@ -36,7 +36,7 @@ public class Sheet {
         this.zoomLevel = Integer.parseInt(propertiesLoader.getProperty("sheet.zoomLevel", "0"));
         this.viewType = ViewType.THREE_BY_FOUR;
         this.iRelationshipManager = new RelationshipManager();
-        this.iSheetSerialize = new SheetXmindSerializer();
+        this.iSheetFile = new SheetXMindFile();
     }
 
 }

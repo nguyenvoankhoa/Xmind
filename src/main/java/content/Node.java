@@ -84,4 +84,9 @@ public class Node {
                         .findFirst()
                         .orElse(null));
     }
+
+    public String clearText(){
+        setContent("");
+        return this.content;
+    }
 }

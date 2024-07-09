@@ -4,9 +4,6 @@ import content.Node;
 import dependency.IPropertyLoader;
 import lombok.Getter;
 import lombok.Setter;
-import setting.PropertiesLoader;
-
-import java.io.IOException;
 
 @Getter
 @Setter

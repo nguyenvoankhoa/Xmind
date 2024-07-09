@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.io.IOException;
 import java.util.Optional;
 
 @Getter
@@ -22,11 +21,13 @@ public class Topic extends Node {
     }
 
     public void changeParent(String parentId, Root root) {
-        Node parent = root.findById(parentId);
+        Node newParent = root.findById(parentId);
         Optional.ofNullable(this.getParent())
                 .ifPresent(p -> p.removeChild(this.getId()));
-        Optional.ofNullable(parent)
-                .ifPresent(p -> p.addChild(this));
-        this.setFloating(true);
+        Optional.ofNullable(newParent)
+                .ifPresentOrElse(p -> p.addChild(this), () -> {
+                    this.setFloating(true);
+                    this.setParent(newParent);
+                });
     }
 }

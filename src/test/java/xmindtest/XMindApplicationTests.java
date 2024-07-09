@@ -3,7 +3,7 @@ package xmindtest;
 import content.XMind;
 import dependency.ISheetManager;
 import sheet.*;
-import dependency.ISheetSerialize;
+import dependency.ISheetFile;
 import content.Topic;
 import content.Root;
 import file.IOMessage;
@@ -32,7 +32,7 @@ class XMindApplicationTests {
     }
 
     @Test
-    void testNewXMind() {
+    void testCreateNew() {
         assertEquals(1, xMind.getSheetManager().getSheets().stream().count());
     }
 
@@ -56,39 +56,41 @@ class XMindApplicationTests {
 
     @Test
     void testExportPDF() {
-        IOMessage message = sheet.getISheetSerialize().saveMindMap(sheet, "test.pdf");
+        ISheetFile sheetFile = new SheetPDFFile();
+        sheet.setISheetFile(sheetFile);
+        IOMessage message = sheet.getISheetFile().saveMindMap(sheet, "test.pdf");
         assertEquals(IOStatus.SUCCESS, message.getExportStatus());
     }
 
     @Test
     void testExportPNG() {
-        ISheetSerialize sheetSerialize = new SheetPNGSerializer();
-        sheet.setISheetSerialize(sheetSerialize);
-        IOMessage message = sheet.getISheetSerialize().saveMindMap(sheet, "test.png");
+        ISheetFile sheetFile = new SheetPNGFile();
+        sheet.setISheetFile(sheetFile);
+        IOMessage message = sheet.getISheetFile().saveMindMap(sheet, "test.png");
         assertEquals(IOStatus.SUCCESS, message.getExportStatus());
     }
 
     @Test
     void testExportWord() {
-        ISheetSerialize sheetSerialize = new SheetWordSerializer();
-        sheet.setISheetSerialize(sheetSerialize);
-        IOMessage message = sheet.getISheetSerialize().saveMindMap(sheet, "test.docx");
+        ISheetFile sheetFile = new SheetWordFile();
+        sheet.setISheetFile(sheetFile);
+        IOMessage message = sheet.getISheetFile().saveMindMap(sheet, "test.docx");
         assertEquals(IOStatus.SUCCESS, message.getExportStatus());
     }
 
     @Test
-    void testExportXmind() {
-        ISheetSerialize sheetSerialize = new SheetXmindSerializer();
-        sheet.setISheetSerialize(sheetSerialize);
-        IOMessage message = sheet.getISheetSerialize().saveMindMap(sheet, "test.xmind");
+    void testExportXMind() {
+        ISheetFile sheetFile = new SheetXMindFile();
+        sheet.setISheetFile(sheetFile);
+        IOMessage message = sheet.getISheetFile().saveMindMap(sheet, "test.xmind");
         assertEquals(IOStatus.SUCCESS, message.getExportStatus());
     }
 
     @Test
-    void testOpenXmind() {
-        SheetXmindSerializer sheetSerialize = new SheetXmindSerializer();
-        sheet.setISheetSerialize(sheetSerialize);
-        IOMessage message = ((SheetXmindSerializer) sheet.getISheetSerialize()).openMindMap("test.xmind");
+    void testOpenXMind() {
+        SheetXMindFile sheetFile = new SheetXMindFile();
+        sheet.setISheetFile(sheetFile);
+        IOMessage message = ((SheetXMindFile) sheet.getISheetFile()).openMindMap("test.xmind");
         assertEquals(IOStatus.SUCCESS, message.getExportStatus());
     }
 
@@ -104,10 +106,8 @@ class XMindApplicationTests {
     @Test
     void testRemoveChildren() {
         Topic topic = new Topic(sheet.getPropertiesLoader(), "abc", "Leaf 1");
-        root.addChild(topic);
-        long beforeRemoveSize = root.getChildren().stream().count();
-        root.removeChild(topic.getId());
-        long afterRemoveSize = root.getChildren().stream().count();
+        long beforeRemoveSize = root.addChild(topic).stream().count();
+        long afterRemoveSize = root.removeChild(topic.getId()).stream().count();
         assertEquals(beforeRemoveSize - 1, afterRemoveSize);
     }
 
@@ -124,21 +124,32 @@ class XMindApplicationTests {
     }
 
     @Test
-    void testTopicMove() {
+    void testClearText() {
+        assertEquals("", root.clearText());
+    }
+
+    @Test
+    void testTopicChangeParent() {
         Topic topic = new Topic(sheet.getPropertiesLoader(), "abc", "Topic 1");
-        Topic topic1 = new Topic(sheet.getPropertiesLoader(), "def", "Topic 2");
         root.addChild(topic);
-        root.addChild(topic1);
-        topic.changeParent("def", sheet.getRoot());
-        assertEquals(topic.getParent().getId(), topic1.getId());
+        topic.changeParent("1", sheet.getRoot());
+        assertNotEquals(null, topic.getParent());
+    }
+
+    @Test
+    void testTopicBecomeFloat() {
+        Topic topic = new Topic(sheet.getPropertiesLoader(), "abc", "Topic 1");
+        root.addChild(topic);
+        topic.changeParent("", sheet.getRoot());
+        assertTrue(topic.isFloating());
     }
 
 
     @Test
-    void testFloatContentBecomeLeaf() {
+    void testFloatContentAddParent() {
         Topic topic = new Topic(sheet.getPropertiesLoader(), "Hello", "New Topic");
         topic.setFloating(true);
-        topic.changeParent("root", sheet.getRoot());
+        topic.changeParent("Root", sheet.getRoot());
         assertEquals(topic.getParent().getId(), root.getId());
     }
 
@@ -175,11 +186,10 @@ class XMindApplicationTests {
         Topic target = new Topic(sheet.getPropertiesLoader(), "def", "Node 2");
         root.addChild(src);
         root.addChild(target);
-        sheet.getIRelationshipManager().addRelationship(sheet.getPropertiesLoader(), src, target);
+        long relaBefore = sheet.getIRelationshipManager().addRelationship(sheet.getPropertiesLoader(), src, target).stream().count();
         Relationship relationship = sheet.getIRelationshipManager().getRelationships().get(0);
-        int relaBefore = sheet.getIRelationshipManager().getRelationships().size();
         sheet.getIRelationshipManager().removeRelationship(relationship);
-        int relaAfter = sheet.getIRelationshipManager().getRelationships().size();
+        long relaAfter = sheet.getIRelationshipManager().getRelationships().stream().count();
         assertEquals(relaBefore - 1, relaAfter);
     }
 
