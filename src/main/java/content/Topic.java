@@ -26,9 +26,12 @@ public class Topic extends Node {
         Optional.ofNullable(this.getParent())
                 .ifPresent(p -> p.removeChild(this.getId()));
         Optional.ofNullable(newParent)
-                .ifPresentOrElse(p -> p.addChild(this), () -> {
-                    this.setFloating(true);
+                .ifPresentOrElse(p -> {
+                    p.addChild(this);
                     sheet.getIFloatingTopicManager().removeTopic(getId());
+                }, () -> {
+                    this.setFloating(true);
+                    sheet.getIFloatingTopicManager().addFloatTopic(this);
                 });
     }
 }
