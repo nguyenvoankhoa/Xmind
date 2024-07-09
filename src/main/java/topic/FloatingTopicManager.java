@@ -14,13 +14,18 @@ public class FloatingTopicManager implements IFloatingTopicManager {
     private List<Topic> floatingTopicList;
 
     public FloatingTopicManager() {
-        floatingTopicList = new ArrayList<>();
+        this.floatingTopicList = new ArrayList<>();
     }
 
     public Topic createNewFloatingTopic() {
         Topic topic = new Topic();
-        floatingTopicList.add(topic);
+        this.floatingTopicList.add(topic);
         return topic;
+    }
+
+    public List<Topic> addFloatTopic(Topic t){
+        this.floatingTopicList.add(t);
+        return this.floatingTopicList;
     }
 
     public void removeTopic(String topicId) {
