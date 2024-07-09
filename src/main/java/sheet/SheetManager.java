@@ -7,10 +7,13 @@ import lombok.Setter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Getter
 @Setter
 public class SheetManager implements ISheetManager {
+    private static final Logger LOGGER = Logger.getLogger(SheetManager.class.getName());
     List<Sheet> sheets;
 
 
@@ -26,7 +29,7 @@ public class SheetManager implements ISheetManager {
             sheets.add(sheet);
             return sheet;
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Failed to create default sheet", e);
         }
         return null;
     }
@@ -45,7 +48,7 @@ public class SheetManager implements ISheetManager {
             sheets.add(newSheet);
             return newSheet;
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Failed to duplicate sheet", e);
         }
         return null;
     }
