@@ -130,7 +130,7 @@ class XMindApplicationTests {
     void testTopicChangeParent() {
         Topic topic = new Topic(sheet.getPropertiesLoader(), "abc", "Topic 1");
         root.addChild(topic);
-        topic.changeParent("1", sheet.getRoot());
+        topic.changeParent("1", sheet.getRoot(), sheet);
         assertNotEquals(null, topic.getParent());
     }
 
@@ -138,7 +138,7 @@ class XMindApplicationTests {
     void testTopicBecomeFloat() {
         Topic topic = new Topic(sheet.getPropertiesLoader(), "abc", "Topic 1");
         root.addChild(topic);
-        topic.changeParent("", sheet.getRoot());
+        topic.changeParent("", sheet.getRoot(), sheet);
         assertTrue(topic.isFloating());
     }
 
@@ -147,7 +147,7 @@ class XMindApplicationTests {
     void testFloatContentAddParent() {
         Topic topic = new Topic(sheet.getPropertiesLoader(), "Hello", "New Topic");
         topic.setFloating(true);
-        topic.changeParent("Root", sheet.getRoot());
+        topic.changeParent("Root", sheet.getRoot(), sheet);
         assertEquals(topic.getParent().getId(), root.getId());
     }
 

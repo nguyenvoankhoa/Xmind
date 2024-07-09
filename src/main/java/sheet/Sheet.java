@@ -1,6 +1,8 @@
 package sheet;
 
 import content.Root;
+import dependency.IFloatingTopicManager;
+import dependency.IPropertyLoader;
 import dependency.ISheetFile;
 import dependency.IRelationshipManager;
 import relationship.RelationshipManager;
@@ -8,6 +10,7 @@ import setting.PropertiesLoader;
 import setting.ViewType;
 import lombok.Getter;
 import lombok.Setter;
+import topic.FloatingTopicManager;
 
 import java.io.IOException;
 
@@ -24,7 +27,9 @@ public class Sheet {
     private Root root;
     private IRelationshipManager iRelationshipManager;
     private ISheetFile iSheetFile;
-    private PropertiesLoader propertiesLoader;
+
+    private IFloatingTopicManager iFloatingTopicManager;
+    private IPropertyLoader propertiesLoader;
 
     public Sheet() throws IOException {
         this.propertiesLoader = new PropertiesLoader("application.properties");
@@ -37,6 +42,7 @@ public class Sheet {
         this.viewType = ViewType.THREE_BY_FOUR;
         this.iRelationshipManager = new RelationshipManager();
         this.iSheetFile = new SheetXMindFile();
+        this.iFloatingTopicManager = new FloatingTopicManager();
     }
 
 }

@@ -14,7 +14,6 @@ public class SheetManager implements ISheetManager {
     List<Sheet> sheets;
 
 
-
     public SheetManager() {
         this.sheets = new ArrayList<>();
         createDefaultSheet();

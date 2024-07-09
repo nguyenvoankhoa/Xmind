@@ -4,6 +4,7 @@ import dependency.IPropertyLoader;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import sheet.Sheet;
 
 import java.util.Optional;
 
@@ -20,14 +21,14 @@ public class Topic extends Node {
         super(iPropertyLoader, id, content);
     }
 
-    public void changeParent(String parentId, Root root) {
+    public void changeParent(String parentId, Root root, Sheet sheet) {
         Node newParent = root.findById(parentId);
         Optional.ofNullable(this.getParent())
                 .ifPresent(p -> p.removeChild(this.getId()));
         Optional.ofNullable(newParent)
                 .ifPresentOrElse(p -> p.addChild(this), () -> {
                     this.setFloating(true);
-                    this.setParent(newParent);
+                    sheet.getIFloatingTopicManager().removeTopic(getId());
                 });
     }
 }
