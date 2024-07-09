@@ -182,10 +182,8 @@ class XMindApplicationTests {
 
     @Test
     void testRemoveRelationship() throws IOException {
-        Topic src = new Topic(sheet.getPropertiesLoader(), "abc", "Node 1");
-        Topic target = new Topic(sheet.getPropertiesLoader(), "def", "Node 2");
-        root.addChild(src);
-        root.addChild(target);
+        Topic src = (Topic) root.findById("1");
+        Topic target = (Topic) root.findById("2");
         long relaBefore = sheet.getIRelationshipManager().addRelationship(sheet.getPropertiesLoader(), src, target).stream().count();
         Relationship relationship = sheet.getIRelationshipManager().getRelationships().get(0);
         sheet.getIRelationshipManager().removeRelationship(relationship);
@@ -195,20 +193,16 @@ class XMindApplicationTests {
 
     @Test
     void testAddRelationship() throws IOException {
-        Topic src = new Topic(sheet.getPropertiesLoader(), "abc", "Node 1");
-        Topic target = new Topic(sheet.getPropertiesLoader(), "def", "Node 2");
-        root.addChild(src);
-        root.addChild(target);
+        Topic src = (Topic) root.findById("1");
+        Topic target = (Topic) root.findById("2");
         sheet.getIRelationshipManager().addRelationship(sheet.getPropertiesLoader(), src, target);
         assertEquals(1, sheet.getIRelationshipManager().getRelationships().stream().count());
     }
 
     @Test
     void testChangeTargetNodeRelationship() throws IOException {
-        Topic src = new Topic(sheet.getPropertiesLoader(), "abc", "Node 1");
-        Topic target = new Topic(sheet.getPropertiesLoader(), "def", "Node 2");
-        root.addChild(src);
-        root.addChild(target);
+        Topic src = (Topic) root.findById("1");
+        Topic target = (Topic) root.findById("2");
         sheet.getIRelationshipManager().addRelationship(sheet.getPropertiesLoader(), src, target);
         sheet.getIRelationshipManager().getRelationships().get(0).changeTargetRelationship(root);
         assertEquals(sheet.getIRelationshipManager().getRelationships().get(0).getTargetNode(), root);
@@ -219,6 +213,5 @@ class XMindApplicationTests {
         root.setStructure(Structure.FISH_BONE);
         assertEquals(Structure.FISH_BONE, root.getStructure());
     }
-
 
 }
