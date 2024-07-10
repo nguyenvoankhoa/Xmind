@@ -1,5 +1,6 @@
 package content;
 
+import dependency.IFloatingTopicManager;
 import dependency.IPropertyLoader;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,17 +22,15 @@ public class Topic extends Node {
         super(iPropertyLoader, id, content);
     }
 
-    public void changeParent(String parentId, Root root, Sheet sheet) {
-        Node newParent = root.findById(parentId);
-        Optional.ofNullable(this.getParent())
-                .ifPresent(p -> p.removeChild(this.getId()));
-        Optional.ofNullable(newParent)
-                .ifPresentOrElse(p -> {
-                    p.addChild(this);
-                    sheet.getIFloatingTopicManager().removeTopic(getId());
-                }, () -> {
-                    this.setFloating(true);
-                    sheet.getIFloatingTopicManager().addFloatTopic(this);
-                });
+    public void changeParent(Node newParent) {
+        newParent.addChild(this);
+        this.parent.removeChild(this);
     }
+
+    public void changeToFloat(IFloatingTopicManager floatMng) {
+        this.setParent(null);
+        setFloating(true);
+        floatMng.addFloatTopic(this);
+    }
+
 }

@@ -8,7 +8,6 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Getter
@@ -25,9 +24,7 @@ public class Node {
     protected String shape;
     protected String font;
     protected Structure structure;
-
     protected IPropertyLoader propertiesLoader;
-
 
     public Node(IPropertyLoader iPropertyLoader) {
         this.propertiesLoader = iPropertyLoader;
@@ -53,17 +50,14 @@ public class Node {
                 .ifPresent(nodes -> nodes.forEach(node -> node.setStructure(structure)));
     }
 
-    public List<Node> addChild(Node child) {
-        Optional.of(child)
-                .filter(Topic.class::isInstance)
-                .map(c -> (Topic) c)
-                .ifPresent(topic -> topic.setParent(this));
+    public List<Node> addChild(Topic child) {
+        child.setParent(this);
         children.add(child);
         return children;
     }
 
-    public List<Node> removeChild(String childId) {
-        this.children.removeIf(n -> n.id.equals(childId));
+    public List<Node> removeChild(Node child) {
+        this.children.removeIf(n -> n.equals(child));
         return this.children;
     }
 
@@ -75,17 +69,8 @@ public class Node {
         setOpen(true);
     }
 
-    public Node findById(String id) {
-        return Optional.of(this)
-                .filter(node -> getId().equals(id))
-                .orElseGet(() -> getChildren().stream()
-                        .map(node -> node.findById(id))
-                        .filter(Objects::nonNull)
-                        .findFirst()
-                        .orElse(null));
-    }
 
-    public String clearText(){
+    public String clearText() {
         setContent("");
         return this.content;
     }

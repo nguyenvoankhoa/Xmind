@@ -2,7 +2,6 @@ package dependency;
 
 import sheet.Sheet;
 
-import java.io.IOException;
 import java.util.List;
 
 public interface ISheetManager {

@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class IOMessage {
-    private IOStatus exportStatus;
+public class FileResponse {
+    private FileStatus exportStatus;
     private String message;
 }

@@ -1,12 +1,12 @@
 package sheet;
 
 import dependency.ISheetFile;
-import file.IOMessage;
-import file.IOStatus;
+import file.FileResponse;
+import file.FileStatus;
 
 public class SheetPDFFile implements ISheetFile {
     @Override
-    public IOMessage saveMindMap(Sheet sheet, String filepath) {
-        return new IOMessage(IOStatus.SUCCESS, "Save to PDF success");
+    public FileResponse saveMindMap(Sheet sheet, String filepath) {
+        return new FileResponse(FileStatus.SUCCESS, "Save to PDF success");
     }
 }
