@@ -1,6 +1,6 @@
 package file;
 
-public enum IOStatus {
+public enum FileStatus {
     SUCCESS,
     FAIL
 }

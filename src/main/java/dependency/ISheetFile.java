@@ -1,8 +1,8 @@
 package dependency;
 
 import sheet.Sheet;
-import file.IOMessage;
+import file.FileResponse;
 
 public interface ISheetFile {
-    IOMessage saveMindMap(Sheet sheet, String filepath);
+    FileResponse saveMindMap(Sheet sheet, String filepath);
 }

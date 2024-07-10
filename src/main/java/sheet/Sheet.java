@@ -27,7 +27,6 @@ public class Sheet {
     private Root root;
     private IRelationshipManager iRelationshipManager;
     private ISheetFile iSheetFile;
-
     private IFloatingTopicManager iFloatingTopicManager;
     private IPropertyLoader propertiesLoader;
 

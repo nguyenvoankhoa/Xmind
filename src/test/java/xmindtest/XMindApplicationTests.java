@@ -6,8 +6,8 @@ import sheet.*;
 import dependency.ISheetFile;
 import content.Topic;
 import content.Root;
-import file.IOMessage;
-import file.IOStatus;
+import file.FileResponse;
+import file.FileStatus;
 import relationship.Relationship;
 import setting.Structure;
 import setting.ViewType;
@@ -56,40 +56,40 @@ class XMindApplicationTests {
     void testExportPDF() {
         ISheetFile sheetFile = new SheetPDFFile();
         sheet.setISheetFile(sheetFile);
-        IOMessage message = sheet.getISheetFile().saveMindMap(sheet, "test.pdf");
-        assertEquals(IOStatus.SUCCESS, message.getExportStatus());
+        FileResponse message = sheet.getISheetFile().saveMindMap(sheet, "test.pdf");
+        assertEquals(FileStatus.SUCCESS, message.getExportStatus());
     }
 
     @Test
     void testExportPNG() {
         ISheetFile sheetFile = new SheetPNGFile();
         sheet.setISheetFile(sheetFile);
-        IOMessage message = sheet.getISheetFile().saveMindMap(sheet, "test.png");
-        assertEquals(IOStatus.SUCCESS, message.getExportStatus());
+        FileResponse message = sheet.getISheetFile().saveMindMap(sheet, "test.png");
+        assertEquals(FileStatus.SUCCESS, message.getExportStatus());
     }
 
     @Test
     void testExportWord() {
         ISheetFile sheetFile = new SheetWordFile();
         sheet.setISheetFile(sheetFile);
-        IOMessage message = sheet.getISheetFile().saveMindMap(sheet, "test.docx");
-        assertEquals(IOStatus.SUCCESS, message.getExportStatus());
+        FileResponse message = sheet.getISheetFile().saveMindMap(sheet, "test.docx");
+        assertEquals(FileStatus.SUCCESS, message.getExportStatus());
     }
 
     @Test
     void testExportXMind() {
         ISheetFile sheetFile = new SheetXMindFile();
         sheet.setISheetFile(sheetFile);
-        IOMessage message = sheet.getISheetFile().saveMindMap(sheet, "test.xmind");
-        assertEquals(IOStatus.SUCCESS, message.getExportStatus());
+        FileResponse message = sheet.getISheetFile().saveMindMap(sheet, "test.xmind");
+        assertEquals(FileStatus.SUCCESS, message.getExportStatus());
     }
 
     @Test
     void testOpenXMind() {
         SheetXMindFile sheetFile = new SheetXMindFile();
         sheet.setISheetFile(sheetFile);
-        IOMessage message = ((SheetXMindFile) sheet.getISheetFile()).openMindMap("test.xmind");
-        assertEquals(IOStatus.SUCCESS, message.getExportStatus());
+        FileResponse message = ((SheetXMindFile) sheet.getISheetFile()).openMindMap("test.xmind");
+        assertEquals(FileStatus.SUCCESS, message.getExportStatus());
     }
 
     @Test
@@ -105,7 +105,7 @@ class XMindApplicationTests {
     void testRemoveChildren() {
         Topic topic = new Topic(sheet.getPropertiesLoader(), "abc", "Leaf 1");
         long beforeRemoveSize = root.addChild(topic).stream().count();
-        long afterRemoveSize = root.removeChild(topic.getId()).stream().count();
+        long afterRemoveSize = root.removeChild(topic).stream().count();
         assertEquals(beforeRemoveSize - 1, afterRemoveSize);
     }
 
@@ -130,7 +130,7 @@ class XMindApplicationTests {
     void testTopicChangeParent() {
         Topic topic = new Topic(sheet.getPropertiesLoader(), "abc", "Topic 1");
         root.addChild(topic);
-        topic.changeParent("1", sheet.getRoot(), sheet);
+        topic.changeParent(root);
         assertNotEquals(null, topic.getParent());
     }
 
@@ -138,7 +138,7 @@ class XMindApplicationTests {
     void testTopicBecomeFloat() {
         Topic topic = new Topic(sheet.getPropertiesLoader(), "abc", "Topic 1");
         root.addChild(topic);
-        topic.changeParent("", sheet.getRoot(), sheet);
+        topic.changeToFloat(sheet.getIFloatingTopicManager());
         assertTrue(topic.isFloating());
     }
 
@@ -147,7 +147,7 @@ class XMindApplicationTests {
     void testFloatContentAddParent() {
         Topic topic = new Topic(sheet.getPropertiesLoader(), "Hello", "New Topic");
         topic.setFloating(true);
-        topic.changeParent("Root", sheet.getRoot(), sheet);
+        topic.changeParent(root);
         assertEquals(topic.getParent().getId(), root.getId());
     }
 
@@ -180,8 +180,8 @@ class XMindApplicationTests {
 
     @Test
     void testRemoveRelationship() {
-        Topic src = (Topic) root.findById("1");
-        Topic target = (Topic) root.findById("2");
+        Topic src = new Topic(sheet.getPropertiesLoader(), "abc", "Topic 1");
+        Topic target = new Topic(sheet.getPropertiesLoader(), "def", "Topic 2");
         long relaBefore = sheet.getIRelationshipManager().addRelationship(sheet.getPropertiesLoader(), src, target).stream().count();
         Relationship relationship = sheet.getIRelationshipManager().getRelationships().get(0);
         sheet.getIRelationshipManager().removeRelationship(relationship);
@@ -191,19 +191,19 @@ class XMindApplicationTests {
 
     @Test
     void testAddRelationship() {
-        Topic src = (Topic) root.findById("1");
-        Topic target = (Topic) root.findById("2");
+        Topic src = new Topic(sheet.getPropertiesLoader(), "abc", "Topic 1");
+        Topic target = new Topic(sheet.getPropertiesLoader(), "def", "Topic 2");
         sheet.getIRelationshipManager().addRelationship(sheet.getPropertiesLoader(), src, target);
         assertEquals(1, sheet.getIRelationshipManager().getRelationships().stream().count());
     }
 
     @Test
     void testChangeTargetNodeRelationship() {
-        Topic src = (Topic) root.findById("1");
-        Topic target = (Topic) root.findById("2");
-        sheet.getIRelationshipManager().addRelationship(sheet.getPropertiesLoader(), src, target);
-        sheet.getIRelationshipManager().getRelationships().get(0).changeTargetRelationship(root);
-        assertEquals(sheet.getIRelationshipManager().getRelationships().get(0).getTargetNode(), root);
+        Topic src = new Topic(sheet.getPropertiesLoader(), "abc", "Topic 1");
+        Topic newTarget = new Topic(sheet.getPropertiesLoader(), "def", "Topic 2");
+        sheet.getIRelationshipManager().addRelationship(sheet.getPropertiesLoader(), src, root);
+        sheet.getIRelationshipManager().getRelationships().get(0).changeTargetRelationship(newTarget);
+        assertEquals(newTarget, sheet.getIRelationshipManager().getRelationships().get(0).getRela().get(src));
     }
 
     @Test
